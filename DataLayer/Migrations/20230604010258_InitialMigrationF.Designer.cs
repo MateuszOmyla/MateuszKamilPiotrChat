@@ -4,16 +4,18 @@ using DataLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace DataLayer.Migrations
 {
-    [DbContext(typeof(HermesDbContext))]
-    partial class HermesDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ChatDbContext))]
+    [Migration("20230604010258_InitialMigrationF")]
+    partial class InitialMigrationF
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,6 +45,21 @@ namespace DataLayer.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("GroupMembers");
+                });
+
+            modelBuilder.Entity("DataLayer.Entities.UserMessages", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MessageID")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "MessageID");
+
+                    b.HasIndex("MessageID");
+
+                    b.ToTable("UserMessages");
                 });
 
             modelBuilder.Entity("DataLayer.Group", b =>
@@ -105,12 +122,15 @@ namespace DataLayer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -134,6 +154,25 @@ namespace DataLayer.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DataLayer.Entities.UserMessages", b =>
+                {
+                    b.HasOne("DataLayer.Message", "Message")
+                        .WithMany("UserMesseges")
+                        .HasForeignKey("MessageID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataLayer.User", "User")
+                        .WithMany("RecivedMessages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Message");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DataLayer.Message", b =>
                 {
                     b.HasOne("DataLayer.User", "MessageFrom")
@@ -153,6 +192,16 @@ namespace DataLayer.Migrations
                     b.Navigation("MessageToGroup");
 
                     b.Navigation("MessageToUser");
+                });
+
+            modelBuilder.Entity("DataLayer.Message", b =>
+                {
+                    b.Navigation("UserMesseges");
+                });
+
+            modelBuilder.Entity("DataLayer.User", b =>
+                {
+                    b.Navigation("RecivedMessages");
                 });
 #pragma warning restore 612, 618
         }

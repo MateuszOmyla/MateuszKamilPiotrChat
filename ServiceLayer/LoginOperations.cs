@@ -9,9 +9,9 @@ namespace ServiceLayer
 {
     public class LoginOperations
     {
-        private readonly HermesRepository _repository;
+        private readonly ChatRepository _repository;
 
-        public LoginOperations(HermesRepository repository)
+        public LoginOperations(ChatRepository repository)
         {
             _repository = repository;
         }

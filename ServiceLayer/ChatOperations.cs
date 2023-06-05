@@ -1,16 +1,20 @@
 ﻿using DataLayer;
+using DataLayer.Context;
 
 namespace ServiceLayer
 {
     public class ChatOperations
     {
-        private readonly HermesRepository _repository;
+        private readonly ChatRepository _repository;
         private readonly LoginOperations _loginOperator;
+        
 
-        public ChatOperations(HermesRepository repository, LoginOperations loginOperator)
+        public ChatOperations(ChatRepository repository, LoginOperations loginOperator)
         {
             _repository = repository;
             _loginOperator = loginOperator;
+            
+
         }
 
         public List<Group> GetListOfGroups()

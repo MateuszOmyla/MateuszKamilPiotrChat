@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DataLayer.Migrations
 {
-    public partial class SetUpTables : Migration
+    public partial class InitialMigrationF : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -28,19 +28,37 @@ namespace DataLayer.Migrations
                 {
                     UserId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    GroupId = table.Column<int>(type: "int", nullable: true)
+                    Username = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GroupMembers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GroupId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroupMembers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Groups_GroupId",
+                        name: "FK_GroupMembers_Groups_GroupId",
                         column: x => x.GroupId,
                         principalTable: "Groups",
                         principalColumn: "GroupId");
+                    table.ForeignKey(
+                        name: "FK_GroupMembers_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -75,6 +93,40 @@ namespace DataLayer.Migrations
                         principalColumn: "UserId");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserMessages",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    MessageID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserMessages", x => new { x.UserId, x.MessageID });
+                    table.ForeignKey(
+                        name: "FK_UserMessages_Messages_MessageID",
+                        column: x => x.MessageID,
+                        principalTable: "Messages",
+                        principalColumn: "MessageId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserMessages_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupMembers_GroupId",
+                table: "GroupMembers",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupMembers_UserId",
+                table: "GroupMembers",
+                column: "UserId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_MessageFromUserId",
                 table: "Messages",
@@ -91,21 +143,27 @@ namespace DataLayer.Migrations
                 column: "MessageToUserUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_GroupId",
-                table: "Users",
-                column: "GroupId");
+                name: "IX_UserMessages_MessageID",
+                table: "UserMessages",
+                column: "MessageID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "GroupMembers");
+
+            migrationBuilder.DropTable(
+                name: "UserMessages");
+
+            migrationBuilder.DropTable(
                 name: "Messages");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Groups");
 
             migrationBuilder.DropTable(
-                name: "Groups");
+                name: "Users");
         }
     }
 }

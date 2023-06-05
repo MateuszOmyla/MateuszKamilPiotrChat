@@ -1,3 +1,4 @@
+using DataLayer;
 using DataLayer.Context;
 using HermesChatApp.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -11,12 +12,14 @@ builder.Services.AddSignalR();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddDbContext<HermesDbContext>();
+builder.Services.AddDbContext<ChatDbContext>();
 
-builder.Services.AddScoped<DataLayer.HermesRepository>();
+builder.Services.AddScoped<DataLayer.ChatRepository>();
 builder.Services.AddScoped<ServiceLayer.LoginOperations>();
 builder.Services.AddScoped<ServiceLayer.ChatOperations>();
 builder.Services.AddScoped<ServiceLayer.MailService>();
+
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

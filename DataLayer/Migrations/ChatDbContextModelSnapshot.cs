@@ -4,18 +4,16 @@ using DataLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace DataLayer.Migrations
 {
-    [DbContext(typeof(HermesDbContext))]
-    [Migration("20220328112547_SetUpTables")]
-    partial class SetUpTables
+    [DbContext(typeof(ChatDbContext))]
+    partial class ChatDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,6 +21,44 @@ namespace DataLayer.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("DataLayer.Entities.GroupMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("GroupMembers");
+                });
+
+            modelBuilder.Entity("DataLayer.Entities.UserMessages", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MessageID")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "MessageID");
+
+                    b.HasIndex("MessageID");
+
+                    b.ToTable("UserMessages");
+                });
 
             modelBuilder.Entity("DataLayer.Group", b =>
                 {
@@ -84,23 +120,55 @@ namespace DataLayer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("GroupId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("GroupId");
-
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("DataLayer.Entities.GroupMember", b =>
+                {
+                    b.HasOne("DataLayer.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId");
+
+                    b.HasOne("DataLayer.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Group");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DataLayer.Entities.UserMessages", b =>
+                {
+                    b.HasOne("DataLayer.Message", "Message")
+                        .WithMany("UserMesseges")
+                        .HasForeignKey("MessageID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataLayer.User", "User")
+                        .WithMany("RecivedMessages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Message");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DataLayer.Message", b =>
@@ -124,16 +192,14 @@ namespace DataLayer.Migrations
                     b.Navigation("MessageToUser");
                 });
 
-            modelBuilder.Entity("DataLayer.User", b =>
+            modelBuilder.Entity("DataLayer.Message", b =>
                 {
-                    b.HasOne("DataLayer.Group", null)
-                        .WithMany("GroupMembers")
-                        .HasForeignKey("GroupId");
+                    b.Navigation("UserMesseges");
                 });
 
-            modelBuilder.Entity("DataLayer.Group", b =>
+            modelBuilder.Entity("DataLayer.User", b =>
                 {
-                    b.Navigation("GroupMembers");
+                    b.Navigation("RecivedMessages");
                 });
 #pragma warning restore 612, 618
         }

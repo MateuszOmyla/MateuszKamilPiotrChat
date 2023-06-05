@@ -1,17 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DataLayer.Entities;
+using System.ComponentModel.DataAnnotations;
 
-namespace DataLayer
+namespace DataLayer;
+
+public class User
 {
-    public class User
-    {
-        [Key]
-        public int UserId { get; set; }
-        [Required]
-        [StringLength(20, MinimumLength = 3)]
-        public string? Username { get; set; }
-        [Required]
-        public string? Password { get; set; }
-        [Required]
-        public string? Email { get; set; }
-    }
+    [Key]
+    public int UserId { get; set; }
+    [Required]
+    [StringLength(20, MinimumLength = 3)]
+    public string? Username { get; set; }
+    [Required]
+    public string? Password { get; set; }
+    [Required]
+    public string? Email { get; set; }
+    public ICollection<UserMessages> RecivedMessages { get; set; }
+
 }

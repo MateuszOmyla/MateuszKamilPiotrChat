@@ -1,8 +1,7 @@
-﻿namespace HermesChatApp.Hubs
+﻿namespace HermesChatApp.Hubs;
+
+public class HubUser
 {
-    public class HubUser
-    {
-        public string UserIdentifier { get; set; }
-        public string Name { get; set; }
-    }
+    public string UserIdentifier { get; set; }
+    public string Name { get; set; }
 }

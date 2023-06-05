@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer
 {
-    public class HermesRepository : IHermesRepository
+    public class ChatRepository : IChatRepository
     {
-        private readonly HermesDbContext _dbContext;
+        private readonly ChatDbContext _dbContext;
 
-        public HermesRepository(HermesDbContext dbContext)
+        public ChatRepository(ChatDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -43,6 +43,24 @@ namespace DataLayer
         {
             _dbContext.Groups.Add(group);
             _dbContext.SaveChanges();
+        }
+
+        public void SaveMessage(Message message)
+        {
+            _dbContext.Messages.Add(message);
+            _dbContext.SaveChanges();
+        }
+
+        public User GetUserByName(string name)
+        {
+            User userToReturn = _dbContext.Users.SingleOrDefault(u => u.Username == name);
+            return userToReturn;
+        }
+
+        public Group GetGroupByName(string name)
+        {
+            Group groupToReturn = _dbContext.Groups.SingleOrDefault(g => g.GroupName == name);
+            return groupToReturn;
         }
     }
 }

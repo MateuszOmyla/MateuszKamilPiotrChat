@@ -1,4 +1,5 @@
 ﻿using DataLayer;
+using DataLayer.Context;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Mail;
@@ -9,7 +10,7 @@ namespace ServiceLayer
     {
         private readonly IConfiguration _config;
 
-        public MailService(IConfiguration config)
+        public MailService(IConfiguration config, ChatDbContext context)
         {
             _config = config;
         }
